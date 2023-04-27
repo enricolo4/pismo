@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.pismo
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [annotation-api, app-name, data, data-jpa, flyway, gradle, h2, hibernate-jpa, hibernate-validator, http-client, jackson-databind, java, java-application, jdbc-hikari, junit, log4j2, micronaut-aop, micronaut-build, micronaut-test-rest-assured, mockito, netty-server, readme, serialization-jackson, shade, testcontainers, yaml]
