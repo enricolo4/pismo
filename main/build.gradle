@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.7.8"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs = [
+            '-Amicronaut.processing.incremental=true',
+            '-Amicronaut.processing.annotations=com.pismo.*',
+    ]
+}
+
+application {
+    mainClass.set("com.pismo.Application")
+
+    applicationDefaultJvmArgs = [
+            "-server",
+            "-XX:+UseNUMA",
+            "-XX:+UseParallelGC",
+            "-Duser.timezone=America/Sao_Paulo"
+    ]
+}
+
+micronaut {
+    version("3.7.4")
+    runtime("netty")
+    testRuntime("junit5")
+
+    processing {
+        incremental(true)
+        annotations("com.pismo.*")
+    }
+}
+
+tasks {
+    shadowJar {
+        archiveBaseName.set("pismo-challenge")
+        archiveVersion.set("")
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+
+    annotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+    implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+
+    implementation("io.micronaut:micronaut-runtime")
+
+    testAnnotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+    testImplementation("javax.annotation:javax.annotation-api")
+}

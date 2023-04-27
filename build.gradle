@@ -1,67 +1,60 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.micronaut.application") version "3.7.8"
+    id 'java'
 }
 
-version = "0.1"
-group = "com.pismo"
+subprojects {
+    apply plugin: 'java'
+    version = "0.1"
+    group = "com.pismo"
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://jcenter.bintray.com" }
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        annotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+        annotationProcessor("io.micronaut:micronaut-graal")
+        annotationProcessor("io.micronaut:micronaut-validation")
+        annotationProcessor("io.micronaut:micronaut-inject-java")
+        annotationProcessor("io.micronaut.data:micronaut-data-processor")
+
+        implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+
+        implementation("jakarta.annotation:jakarta.annotation-api")
+
+        implementation("io.micronaut:micronaut-inject")
+        implementation("io.micronaut:micronaut-validation")
+
+        implementation("javax.annotation:javax.annotation-api")
+
+        implementation("io.micronaut:micronaut-aop")
+
+        testAnnotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+        testAnnotationProcessor("io.micronaut:micronaut-validation")
+        testAnnotationProcessor("io.micronaut:micronaut-inject-java")
+
+        testImplementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+
+        testImplementation("org.mockito:mockito-core")
+        testImplementation("org.testcontainers:junit-jupiter")
+        testImplementation("org.testcontainers:testcontainers")
+        testImplementation("io.micronaut:micronaut-aop")
+        testImplementation("javax.annotation:javax.annotation-api")
+    }
 }
 
-dependencies {
-    annotationProcessor("io.micronaut.data:micronaut-data-processor")
-    annotationProcessor("io.micronaut:micronaut-http-validation")
-    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
-    implementation("io.micronaut:micronaut-aop")
-    implementation("io.micronaut:micronaut-http-client")
-    implementation("io.micronaut:micronaut-jackson-databind")
-    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
-    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
-    implementation("io.micronaut.flyway:micronaut-flyway")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("io.micronaut.sql:micronaut-hibernate-jpa")
-    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
-    implementation("jakarta.annotation:jakarta.annotation-api")
-    implementation("org.apache.logging.log4j:log4j-api")
-    implementation platform("org.apache.logging.log4j:log4j-bom:2.19.0")
-    runtimeOnly("com.h2database:h2")
-    runtimeOnly("org.apache.logging.log4j:log4j-core")
-    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
-    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
-    testImplementation("org.mockito:mockito-core")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:testcontainers")
-    implementation("io.micronaut:micronaut-validation")
-
-}
-
-
-application {
-    mainClass.set("com.pismo.Application")
-}
 java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")
 }
 
-graalvmNative.toolchainDetection = false
-micronaut {
-    runtime("netty")
-    testRuntime("junit5")
-    processing {
-        incremental(true)
-        annotations("com.pismo.*")
+tasks {
+    test {
+        useJUnitPlatform()
     }
 }
-
-
-
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("io.micronaut:micronaut-jackson-databind"))
-            .using(module("io.micronaut.serde:micronaut-serde-jackson:1.5.2"))
-    }
-}
-
