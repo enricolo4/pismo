@@ -4,6 +4,7 @@ import com.pismo.account.model.Account;
 import com.pismo.account.model.CreateAccountRequest;
 import com.pismo.account.ports.primary.CreateAccountPort;
 import com.pismo.account.ports.secondary.AccountDataAccessPort;
+import com.pismo.exceptions.AccountExistsException;
 import jakarta.inject.*;
 
 @Singleton
@@ -13,6 +14,9 @@ public class CreateAccountUseCase implements CreateAccountPort {
 
     @Override
     public Account create(CreateAccountRequest createAccountRequest) {
+        if(accountDataAccessPort.existsByDocumentNumber(createAccountRequest.documentNumber()))
+            throw new AccountExistsException("Account exists");
+
         return accountDataAccessPort.save(createAccountRequest.toModel());
     }
 }

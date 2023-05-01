@@ -1,11 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://jcenter.bintray.com" }
+        maven { url "https://jitpack.io" }
+    }
+}
+
 plugins {
     id 'java'
 }
 
-subprojects {
+allprojects {
     apply plugin: 'java'
-    version = "0.1"
-    group = "com.pismo"
 
     repositories {
         mavenCentral()
@@ -17,24 +26,56 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+        annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
         annotationProcessor("io.micronaut:micronaut-graal")
         annotationProcessor("io.micronaut:micronaut-validation")
         annotationProcessor("io.micronaut:micronaut-inject-java")
-        annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    }
+}
+
+subprojects {
+    version = "0.1"
+    group = "com.pismo"
+
+    sourceSets {
+        getByName("main").java.srcDirs("src/main/java")
+    }
+
+    sourceSets.main {
+        java.srcDir("src/main/java")
+    }
+
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://jcenter.bintray.com" }
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+        annotationProcessor("io.micronaut:micronaut-graal")
+        annotationProcessor("io.micronaut:micronaut-validation")
+        annotationProcessor("io.micronaut:micronaut-inject-java")
 
         implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
 
         implementation("jakarta.annotation:jakarta.annotation-api")
+        implementation("jakarta.transaction:jakarta.transaction-api:2.0.1")
 
         implementation("io.micronaut:micronaut-inject")
         implementation("io.micronaut:micronaut-validation")
 
         implementation("javax.annotation:javax.annotation-api")
 
-        implementation("io.micronaut:micronaut-aop")
+        runtimeOnly("ch.qos.logback:logback-classic")
 
-        testAnnotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+        testAnnotationProcessor("io.micronaut:micronaut-validation")
+        testAnnotationProcessor("io.micronaut:micronaut-inject-java")
+
+        testAnnotationProcessor("io.micronaut:micronaut-graal")
         testAnnotationProcessor("io.micronaut:micronaut-validation")
         testAnnotationProcessor("io.micronaut:micronaut-inject-java")
 
@@ -43,18 +84,17 @@ subprojects {
         testImplementation("org.mockito:mockito-core")
         testImplementation("org.testcontainers:junit-jupiter")
         testImplementation("org.testcontainers:testcontainers")
-        testImplementation("io.micronaut:micronaut-aop")
         testImplementation("javax.annotation:javax.annotation-api")
     }
-}
 
-java {
-    sourceCompatibility = JavaVersion.toVersion("17")
-    targetCompatibility = JavaVersion.toVersion("17")
-}
+    java {
+        sourceCompatibility = JavaVersion.toVersion("17")
+        targetCompatibility = JavaVersion.toVersion("17")
+    }
 
-tasks {
-    test {
-        useJUnitPlatform()
+    tasks {
+        test {
+            useJUnitPlatform()
+        }
     }
 }

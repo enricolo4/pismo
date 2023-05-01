@@ -1,5 +1,7 @@
 package com.pismo.account.model;
 
+import com.pismo.balance.model.Balance;
+
 public class Account {
     private Long id;
     private String documentNumber;

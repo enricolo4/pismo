@@ -11,6 +11,12 @@ dependencies {
 
     runtimeOnly("com.h2database:h2")
 
+    testRuntimeOnly("com.h2database:h2")
     testAnnotationProcessor("io.micronaut.data:micronaut-data-processor")
     testAnnotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
+
+    testImplementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    testImplementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    testImplementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    testImplementation("io.micronaut.flyway:micronaut-flyway")
 }

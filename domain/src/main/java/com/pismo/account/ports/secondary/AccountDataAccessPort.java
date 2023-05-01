@@ -5,5 +5,9 @@ import java.util.Optional;
 
 public interface AccountDataAccessPort {
     Account save(Account account);
-    Account findById(Long id);
+    Account update(Account account);
+
+    Optional<Account> findById(Long id);
+
+    boolean existsByDocumentNumber(String documentNumber);
 }

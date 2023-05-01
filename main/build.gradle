@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id("application")
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.micronaut.application") version "3.7.8"
 }
@@ -26,28 +26,41 @@ micronaut {
     version("3.7.4")
     runtime("netty")
     testRuntime("junit5")
-
-    processing {
-        incremental(true)
-        annotations("com.pismo.*")
-    }
 }
 
 tasks {
     shadowJar {
-        archiveBaseName.set("pismo-challenge")
+        archiveBaseName.set("pismo")
         archiveVersion.set("")
     }
 }
 
 dependencies {
     implementation project(':domain')
+    implementation project(':database')
+    implementation project(':rest-server')
 
-    annotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+    annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    annotationProcessor("io.micronaut:micronaut-validation")
+    annotationProcessor("io.micronaut:micronaut-inject-java")
+
     implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
-
     implementation("io.micronaut:micronaut-runtime")
 
-    testAnnotationProcessor("io.micronaut:micronaut-bom:$micronautVersion")
+    testAnnotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    testAnnotationProcessor("io.micronaut:micronaut-validation")
+    testAnnotationProcessor("io.micronaut:micronaut-inject-java")
+    testAnnotationProcessor("io.micronaut.data:micronaut-data-processor")
+    testAnnotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
+
     testImplementation("javax.annotation:javax.annotation-api")
+    testImplementation("io.micronaut:micronaut-inject")
+    testImplementation("io.micronaut:micronaut-validation")
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+    testImplementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    testImplementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    testImplementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    testImplementation("io.micronaut.flyway:micronaut-flyway")
+
+    testRuntimeOnly("com.h2database:h2")
 }

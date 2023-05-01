@@ -1,3 +1,6 @@
+
+
+
 rootProject.name="pismo"
 
 include("main")
@@ -5,3 +8,6 @@ include("domain")
 
 include("database")
 project(":database").projectDir = file("secondary/database")
+
+include("rest-server")
+project(":rest-server").projectDir = file("primary/rest-server")

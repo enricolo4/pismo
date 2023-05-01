@@ -6,4 +6,7 @@ import io.micronaut.data.repository.CrudRepository;
 
 @Repository
 public interface AccountRepository extends CrudRepository<AccountEntity, Long> {
+    AccountEntity findByDocumentNumber(String documentNumber);
+
+    boolean existsByDocumentNumber(String documentNumber);
 }
