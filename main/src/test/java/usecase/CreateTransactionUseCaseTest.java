@@ -3,8 +3,9 @@ package usecase;
 import com.pismo.account.entity.AccountEntity;
 import com.pismo.account.repository.AccountRepository;
 import com.pismo.balance.entity.BalanceEntity;
-import com.pismo.balance.repository.BalanceRepository;
+import com.pismo.transaction.entity.InstallmentEntity;
 import com.pismo.transaction.entity.TransactionEntity;
+import com.pismo.transaction.repository.InstallmentRepository;
 import com.pismo.transaction.repository.TransactionRepository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.response.Response;
@@ -33,7 +34,7 @@ public class CreateTransactionUseCaseTest {
     private TransactionRepository transactionRepository;
 
     @Inject
-    private BalanceRepository balanceRepository;
+    private InstallmentRepository installmentRepository;
 
     private String documentNumber = "34349566877";
     private AccountEntity accountEntity;
@@ -80,6 +81,38 @@ public class CreateTransactionUseCaseTest {
         Assertions.assertAll(
             () -> Assertions.assertFalse(transactionEntityList.isEmpty()),
             () -> Assertions.assertEquals(BigDecimal.valueOf(-22.5).setScale(2, RoundingMode.HALF_UP), transactionEntityList.get(0).getAmount())
+        );
+    }
+
+    @Test
+    public void creatingInstallmentTransaction() {
+        Map<String, ?> transactionPayload = Map.of(
+            "accountId", accountEntity.getId(),
+            "operationTypeId", 2,
+            "amount", BigDecimal.valueOf(22.5),
+            "totalInstallment", 2
+        );
+
+        post(transactionPayload, "/transactions")
+            .then()
+            .statusCode(201);
+
+        List<TransactionEntity> transactionEntityList = transactionRepository
+            .findByAccountId(accountEntity.getId())
+            .stream()
+            .filter(transactionEntity -> transactionEntity.getOperationType() == 2L)
+            .toList();
+
+        List<InstallmentEntity> installmentEntity = installmentRepository.findByTransactionId(transactionEntityList.stream().findFirst().get().getId());
+
+        Assertions.assertAll(
+            () -> Assertions.assertFalse(transactionEntityList.isEmpty()),
+            () -> Assertions.assertEquals(BigDecimal.valueOf(-22.5).setScale(2, RoundingMode.HALF_UP), transactionEntityList.get(0).getAmount()),
+            () -> Assertions.assertFalse(installmentEntity.isEmpty()),
+            () -> Assertions.assertEquals(BigDecimal.valueOf(11.25).setScale(2, RoundingMode.HALF_UP), installmentEntity.get(0).getAmount()),
+            () -> Assertions.assertEquals(BigDecimal.valueOf(11.25).setScale(2, RoundingMode.HALF_UP), installmentEntity.get(1).getAmount()),
+            () -> Assertions.assertEquals(1, installmentEntity.get(0).getInstallment()),
+            () -> Assertions.assertEquals(2, installmentEntity.get(1).getInstallment())
         );
     }
 
