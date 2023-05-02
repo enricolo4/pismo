@@ -1,3 +1,5 @@
+package com.pismo;
+
 import io.micronaut.runtime.Micronaut;
 
 public class Application {

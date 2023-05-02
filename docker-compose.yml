@@ -1,0 +1,9 @@
+version: '3'
+
+volumes:
+  user-data:
+
+services:
+  pismo:
+    build: .
+    network_mode: host

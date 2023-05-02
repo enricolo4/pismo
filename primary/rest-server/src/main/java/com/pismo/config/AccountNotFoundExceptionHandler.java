@@ -1,4 +1,4 @@
-package config;
+package com.pismo.config;
 
 import com.pismo.exceptions.*;
 import io.micronaut.context.annotation.Requires;
