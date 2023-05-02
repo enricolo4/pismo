@@ -1,65 +1,178 @@
-## Micronaut 3.9.0 Documentation
+# Pismo Challenge
 
-- [User Guide](https://docs.micronaut.io/3.9.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/3.9.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/3.9.0/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
+# Tecnologias
 
-- [Micronaut Gradle Plugin documentation](https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/)
-- [GraalVM Gradle Plugin documentation](https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html)
-- [Shadow Gradle Plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
-## Feature mockito documentation
+- Java 17
+- Micronaut Framework
+- Docker
+- Persistência com H2 em memória
 
-- [https://site.mockito.org](https://site.mockito.org)
+- A aplicação é escrita utilizando a arquitetura hexagonal, nesse todas as camadas conhecem a camada do Domain, porém a 
+mesma não conhece as outras camadas, e suas comunicações são todas feitas por interfaces. 
+  - Primary é onde ficam as requisições feitas para a aplicação, nesse caso é onde fica a cama rest
+  - Secondary é onde ficam as requisação feitas pela aplicação, nesse caso é onde fica a camada de persistência
+  - Domain é onde ficam todas as regras de negócio
+  - Main é onde fica toda a configuração e o main para que a aplicação possa ser executada
 
+# Execução da aplicação
 
-## Feature hibernate-jpa documentation
+- Dentro da raíz do projeto executar o comando ``docker-compose up``
 
-- [Micronaut Hibernate JPA documentation](https://micronaut-projects.github.io/micronaut-sql/latest/guide/index.html#hibernate)
+# Endpoints
 
+## Crição de conta
 
-## Feature testcontainers documentation
+### Post (http://localhost:8080/accounts)
 
-- [https://www.testcontainers.org/](https://www.testcontainers.org/)
+- Request
 
+```json
+{
+  "documentNumber": "34349566894"
+}
+```
 
-## Feature serialization-jackson documentation
+- Response
 
-- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
+```json
+{
+  "id": 1,
+  "documentNumber": "34349566894",
+  "balance": 0
+}
+```
 
+## Crição de conta
 
-## Feature micronaut-test-rest-assured documentation
+### Get por account id (http://localhost:8080/accounts/{id})
+- Response
+```json
+{
+	"id": 1,
+	"documentNumber": "34349566894",
+	"balance": 0.00
+}
+```
 
-- [Micronaut Micronaut-Test REST-assured documentation](https://micronaut-projects.github.io/micronaut-test/latest/guide/#restAssured)
+## Criação de transação
+### Post (http://localhost:8080/transactions)
 
-- [https://rest-assured.io/#docs](https://rest-assured.io/#docs)
+- Request
+```json
+{
+  "accountId": 1,
+  "operationTypeId": 1,
+  "amount": 22.5,
+  "totalInstallment": 2
+}
+```
 
+- Response
+```json
+{
+	"id": 3,
+	"accountId": 1,
+	"operationTypeId": 2,
+	"amount": -22.5,
+	"totalInstallment": null,
+	"eventDate": "2023-05-02T19:09:23.341647228"
+}
+```
 
-## Feature flyway documentation
+- Request para transação de compra parcelada
+```json
+{
+	"id": 3,
+	"accountId": 1,
+	"operationTypeId": 2,
+	"amount": -22.5,
+	"totalInstallment": 2,
+	"eventDate": "2023-05-02T19:09:23.341647228"
+}
+```
+- Response
+  - totalInstallment é a quantidade total de parcelas da compra
+```json
+{
+	"id": 3,
+	"accountId": 1,
+	"operationTypeId": 2,
+	"amount": -22.5,
+	"totalInstallment": 2,
+	"eventDate": "2023-05-02T19:09:23.341647228"
+}
+```
 
-- [Micronaut Flyway Database Migration documentation](https://micronaut-projects.github.io/micronaut-flyway/latest/guide/index.html)
+## Busca de transações
+### Get por transaction id (http://localhost:8080/transactions/{id})
+- Response
+```json
+{
+  "id": 3,
+  "accountId": 1,
+  "operationTypeId": 1,
+  "amount": -22.50
+}
+```
 
-- [https://flywaydb.org/](https://flywaydb.org/)
+### Get por account id (http://localhost:8080/transactions/account/{id})
+- Response
+```json
+{
+  "transactions": [
+    {
+      "id": 3,
+      "accountId": 1,
+      "operationTypeId": 4,
+      "amount": 22.50
+    },
+    {
+      "id": 4,
+      "accountId": 1,
+      "operationTypeId": 3,
+      "amount": -22.50
+    }
+  ]
+}
+```
 
+## Busca de installments
+### Get por installment id (http://localhost:8080/installments/{id})
+- Response
+  - installment é o número da parcela
+  - installmentDue é a data de vencimento dessa parcela
+```json
+{
+	"id": 4,
+	"amount": 11.25,
+	"transactionId": 3,
+	"installment": 1,
+	"installmentDue": "2023-05-02"
+}
+```
 
-## Feature hibernate-validator documentation
+### Get por transaction id (http://localhost:8080/installments/transaction/{id})
 
-- [Micronaut Hibernate Validator documentation](https://micronaut-projects.github.io/micronaut-hibernate-validator/latest/guide/index.html)
-
-
-## Feature micronaut-aop documentation
-
-- [Micronaut Aspect-Oriented Programming (AOP) documentation](https://docs.micronaut.io/latest/guide/index.html#aop)
-
-
-## Feature http-client documentation
-
-- [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
-
-
-## Feature jdbc-hikari documentation
-
-- [Micronaut Hikari JDBC Connection Pool documentation](https://micronaut-projects.github.io/micronaut-sql/latest/guide/index.html#jdbc)
-
-
+- Response
+  - installment é o número da parcela
+  - installmentDue é a data de vencimento dessa parcela
+```json
+{
+	"installments": [
+		{
+			"id": 4,
+			"amount": 11.25,
+			"transactionId": 3,
+			"installment": 1,
+			"installmentDue": "2023-05-02"
+		},
+		{
+			"id": 5,
+			"amount": 11.25,
+			"transactionId": 3,
+			"installment": 2,
+			"installmentDue": "2023-06-02"
+		}
+	]
+}
+```
