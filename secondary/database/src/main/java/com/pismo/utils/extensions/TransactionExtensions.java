@@ -10,16 +10,17 @@ public final class TransactionExtensions {
         long multiplier;
         List<Long> negativeOperationTypeIds = List.of(1L, 2L, 3L);
 
-        if(negativeOperationTypeIds.contains(transaction.operationTypeId()))
+        if(negativeOperationTypeIds.contains(transaction.getOperationTypeId()))
             multiplier = -1L;
         else
             multiplier = 1L;
 
         return new TransactionEntity(
-            transaction.id(),
-            transaction.operationTypeId(),
-            transaction.amount().multiply(BigDecimal.valueOf(multiplier)),
-            AccountExtensions.toEntity(transaction.account())
+            transaction.getId(),
+            transaction.getOperationTypeId(),
+            transaction.getAmount().multiply(BigDecimal.valueOf(multiplier)),
+            transaction.getTotalInstallment(),
+            AccountExtensions.toEntity(transaction.getAccount())
         );
     }
 }

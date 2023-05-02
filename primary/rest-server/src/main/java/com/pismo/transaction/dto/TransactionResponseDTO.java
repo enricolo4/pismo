@@ -6,5 +6,7 @@ public record TransactionResponseDTO(
     Long id,
     Long accountId,
     Long operationTypeId,
-    BigDecimal amount
+    BigDecimal amount,
+    Long totalInstallment,
+    String eventDate
 ) {}

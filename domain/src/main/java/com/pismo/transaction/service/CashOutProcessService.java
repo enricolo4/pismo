@@ -1,11 +1,8 @@
 package com.pismo.transaction.service;
 
 import com.pismo.account.model.Account;
-import com.pismo.balance.model.Balance;
-import com.pismo.account.ports.secondary.AccountDataAccessPort;
 import com.pismo.account.service.GetAccountService;
-import com.pismo.balance.service.UpdateBalance;
-import com.pismo.balance.service.UpdateBalanceService;
+import com.pismo.account.usecase.UpdateBalanceService;
 import com.pismo.exceptions.WrongTransactionAmountException;
 import com.pismo.transaction.model.OperationType;
 import com.pismo.transaction.model.Transaction;
@@ -34,9 +31,9 @@ public class CashOutProcessService implements TransactionProcessService {
             throw new WrongTransactionAmountException("Amount greater than Balance for Account=" + transactionRequest.accountId());
         }
 
-        updateBalanceService.cashOut(account.getBalance(), transactionRequest.amount());
+        Account updatedAccount = updateBalanceService.cashOut(account, transactionRequest.amount());
 
-        return executeTransactionService.execute(transactionRequest.toTransaction(account));
+        return executeTransactionService.execute(transactionRequest.toTransaction(updatedAccount));
     }
 
     @Override

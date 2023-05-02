@@ -1,6 +1,6 @@
 package com.pismo.account.model;
 
-import com.pismo.balance.model.Balance;
+import java.math.BigDecimal;
 
 public class Account {
     private Long id;
@@ -42,5 +42,16 @@ public class Account {
 
     public void setBalance(Balance balance) {
         this.balance = balance;
+    }
+
+    public Account cashIn(BigDecimal amount) {
+        balance.setValue(balance.getValue().add(amount));
+
+        return this;
+    }
+
+    public Account cashOut(BigDecimal amount) {
+        balance.setValue(balance.getValue().subtract(amount));
+        return this;
     }
 }

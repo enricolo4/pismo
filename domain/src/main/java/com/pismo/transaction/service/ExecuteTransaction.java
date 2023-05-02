@@ -16,7 +16,7 @@ public class ExecuteTransaction implements ExecuteTransactionService {
         try {
             return transactionDataAccessPort.save(transaction);
         } catch (Exception exception) {
-            throw new TransactionNotExecutedException("Transaction not execute by Account=" + transaction.account().getId());
+            throw new TransactionNotExecutedException("Transaction not execute by Account=" + transaction.getAccount().getId());
         }
     }
 }

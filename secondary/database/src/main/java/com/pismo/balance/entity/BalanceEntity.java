@@ -1,6 +1,6 @@
 package com.pismo.balance.entity;
 
-import com.pismo.balance.model.Balance;
+import com.pismo.account.model.Balance;
 import com.pismo.shared.Auditable;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import static javax.persistence.GenerationType.AUTO;
 
-@Entity(name = "balance")
+@Entity(name = "balances")
 public class BalanceEntity extends Auditable {
     @Id
     @GeneratedValue(strategy = AUTO)

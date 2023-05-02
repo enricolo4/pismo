@@ -3,15 +3,12 @@ package com.pismo.account.entity;
 import com.pismo.account.model.Account;
 import com.pismo.balance.entity.BalanceEntity;
 import com.pismo.shared.Auditable;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.DateUpdated;
-import java.time.Instant;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import static javax.persistence.GenerationType.AUTO;
 
-@Entity(name = "account")
+@Entity(name = "accounts")
 public class AccountEntity extends Auditable {
     @Id
     @GeneratedValue(strategy = AUTO)

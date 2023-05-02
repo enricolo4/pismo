@@ -10,9 +10,10 @@ public record CreateTransactionRequestDTO(
     @NotNull
     Long operationTypeId,
     @NotNull
-    BigDecimal amount
+    BigDecimal amount,
+    Long totalInstallment
 ) {
     public TransactionRequest toModel() {
-        return new TransactionRequest(accountId, operationTypeId, amount);
+        return new TransactionRequest(accountId, operationTypeId, totalInstallment, amount);
     }
 }

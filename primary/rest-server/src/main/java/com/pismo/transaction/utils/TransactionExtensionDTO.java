@@ -8,10 +8,12 @@ import java.util.List;
 public class TransactionExtensionDTO {
     public static TransactionResponseDTO responseDTO(Transaction transaction) {
         return new TransactionResponseDTO(
-            transaction.id(),
-            transaction.account().getId(),
-            transaction.operationTypeId(),
-            transaction.amount()
+            transaction.getId(),
+            transaction.getAccount().getId(),
+            transaction.getOperationTypeId(),
+            transaction.getAmount(),
+            transaction.getTotalInstallment(),
+            transaction.getEventDate().toString()
         );
     }
 

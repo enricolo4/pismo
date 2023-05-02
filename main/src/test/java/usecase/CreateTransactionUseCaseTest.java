@@ -3,11 +3,14 @@ package usecase;
 import com.pismo.account.entity.AccountEntity;
 import com.pismo.account.repository.AccountRepository;
 import com.pismo.balance.entity.BalanceEntity;
+import com.pismo.balance.repository.BalanceRepository;
 import com.pismo.transaction.entity.TransactionEntity;
 import com.pismo.transaction.repository.TransactionRepository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -29,19 +32,27 @@ public class CreateTransactionUseCaseTest {
     @Inject
     private TransactionRepository transactionRepository;
 
+    @Inject
+    private BalanceRepository balanceRepository;
+
     private String documentNumber = "34349566877";
     private AccountEntity accountEntity;
 
-
-    @BeforeAll
-    void setup() {
-        Map<String, String> payload = Map.of("documentNumber", "34349566877");
-
-        specification
+    private Response post(Map<String, ?> payload, String url) {
+        return specification
             .header("Content-Type", "application/json")
             .body(payload)
             .when()
-            .post("/accounts")
+            .post(url);
+
+    }
+
+    @BeforeAll
+    @Transactional
+    void setup() {
+        Map<String, String> payload = Map.of("documentNumber", "34349566877");
+
+        post(payload, "/accounts")
             .then()
             .statusCode(201);
 
@@ -56,11 +67,7 @@ public class CreateTransactionUseCaseTest {
             "amount", BigDecimal.valueOf(22.5)
         );
 
-        specification
-            .header("Content-Type", "application/json")
-            .body(transactionPayload)
-            .when()
-            .post("/transactions")
+        post(transactionPayload, "/transactions")
             .then()
             .statusCode(201);
 
@@ -84,11 +91,7 @@ public class CreateTransactionUseCaseTest {
             "amount", BigDecimal.valueOf(22.5)
         );
 
-        specification
-            .header("Content-Type", "application/json")
-            .body(transactionPayload)
-            .when()
-            .post("/transactions")
+        post(transactionPayload, "/transactions")
             .then()
             .statusCode(422);
     }
@@ -101,11 +104,7 @@ public class CreateTransactionUseCaseTest {
             "amount", BigDecimal.valueOf(22.5)
         );
 
-        specification
-            .header("Content-Type", "application/json")
-            .body(transactionPayload)
-            .when()
-            .post("/transactions")
+        post(transactionPayload, "/transactions")
             .then()
             .statusCode(201);
 
@@ -126,21 +125,26 @@ public class CreateTransactionUseCaseTest {
     }
 
     @Test
+    @Transactional
     public void creatingCashOutTransaction() {
+        String documentNumber = "34349566876";
+        Map<String, String> payload = Map.of("documentNumber", documentNumber);
+
+        post(payload, "/accounts")
+            .then()
+            .statusCode(201);
+
+        AccountEntity accountEntity = accountRepository.findByDocumentNumber(documentNumber);
+
         Map<String, ?> transactionPayload = Map.of(
             "accountId", accountEntity.getId(),
             "operationTypeId", 4,
             "amount", BigDecimal.valueOf(22.5)
         );
 
-        specification
-            .header("Content-Type", "application/json")
-            .body(transactionPayload)
-            .when()
-            .post("/transactions")
+        post(transactionPayload, "/transactions")
             .then()
             .statusCode(201);
-
 
         Map<String, ?> cashOutPayload = Map.of(
             "accountId", accountEntity.getId(),
@@ -148,11 +152,7 @@ public class CreateTransactionUseCaseTest {
             "amount", BigDecimal.valueOf(22.5)
         );
 
-        specification
-            .header("Content-Type", "application/json")
-            .body(cashOutPayload)
-            .when()
-            .post("/transactions")
+        post(cashOutPayload, "/transactions")
             .then()
             .statusCode(201);
 
@@ -162,13 +162,11 @@ public class CreateTransactionUseCaseTest {
             .filter(transactionEntity -> transactionEntity.getOperationType() == 3L)
             .toList();
 
-        AccountEntity updatedAccount = accountRepository.findByDocumentNumber(documentNumber);
-        BalanceEntity balanceEntity = updatedAccount.getBalance();
+        BalanceEntity withoutBalance = accountRepository.findByDocumentNumber(documentNumber).getBalance();
 
         Assertions.assertAll(
             () -> Assertions.assertFalse(transactionEntityList.isEmpty()),
-            () -> Assertions.assertEquals(BigDecimal.valueOf(-22.5).setScale(2, RoundingMode.HALF_UP), transactionEntityList.get(0).getAmount()),
-            () -> Assertions.assertEquals(BigDecimal.valueOf(22.5).setScale(2, RoundingMode.HALF_UP), balanceEntity.getBalance())
+            () -> Assertions.assertEquals(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP), withoutBalance.getBalance())
         );
     }
 }

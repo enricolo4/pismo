@@ -2,7 +2,7 @@ package com.pismo.transaction.service;
 
 import com.pismo.account.model.Account;
 import com.pismo.account.service.GetAccountService;
-import com.pismo.balance.service.UpdateBalanceService;
+import com.pismo.account.usecase.UpdateBalanceService;
 import com.pismo.transaction.model.OperationType;
 import com.pismo.transaction.model.Transaction;
 import com.pismo.transaction.model.TransactionRequest;
@@ -26,10 +26,9 @@ public class PaymentProcessService implements TransactionProcessService {
     public Transaction process(TransactionRequest transactionRequest) {
 
         Account account = getAccountService.byId(transactionRequest.accountId());
+        Account updatedAccount = updateBalanceService.cashIn(account, transactionRequest.amount());
 
-        updateBalanceService.cashIn(account.getBalance(), transactionRequest.amount());
-
-        return executeTransactionService.execute(transactionRequest.toTransaction(account));
+        return executeTransactionService.execute(transactionRequest.toTransaction(updatedAccount));
     }
 
     @Override

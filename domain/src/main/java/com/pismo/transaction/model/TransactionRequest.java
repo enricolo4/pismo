@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 public record TransactionRequest(
     Long accountId,
     Long operationTypeId,
+    Long totalInstallment,
     BigDecimal amount
 ) {
     public Transaction toTransaction(Account account) {
@@ -13,6 +14,7 @@ public record TransactionRequest(
             null,
             operationTypeId,
             amount,
+            totalInstallment,
             account
         );
     }

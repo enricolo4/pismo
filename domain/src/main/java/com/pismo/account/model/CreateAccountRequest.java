@@ -1,6 +1,5 @@
 package com.pismo.account.model;
 
-import com.pismo.balance.model.Balance;
 import java.math.BigDecimal;
 
 public record CreateAccountRequest(
