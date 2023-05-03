@@ -176,3 +176,9 @@ mesma não conhece as outras camadas, e suas comunicações são todas feitas po
 	]
 }
 ```
+
+## Testes
+Os testes estão escritos dentro do diretório Main, pois fiz o teste de integração e somente o Main tem acesso a todas
+as camadas. Para executar os testes é só executar o comando abaixo 
+
+``/gradlew tests``

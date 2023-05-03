@@ -2,6 +2,8 @@ package com.pismo.transaction.service;
 
 import com.pismo.account.model.Account;
 import com.pismo.account.service.GetAccountService;
+import com.pismo.exceptions.InstallmentNotFoundException;
+import com.pismo.exceptions.InvalidInstallmentNumberException;
 import com.pismo.exceptions.TransactionNotExecutedException;
 import com.pismo.transaction.model.Installment;
 import com.pismo.transaction.model.OperationType;
@@ -29,6 +31,10 @@ public class InstallmentPurchaseProcessService implements TransactionProcessServ
     @Override
     @Transactional(rollbackOn = Exception.class)
     public Transaction process(TransactionRequest transactionRequest) {
+        if(transactionRequest.totalInstallment() == null) {
+            throw new InvalidInstallmentNumberException("Installment value must not be null");
+        }
+
         Account account = getAccountService.byId(transactionRequest.accountId());
 
         try {
